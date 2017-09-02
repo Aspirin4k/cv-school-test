@@ -4,9 +4,11 @@ import (
 	"io/ioutil"
 	"flag"
 	"fmt"
+	"strings"
 
 	"github.com/Aspirin4k/cv_school_test/project/fragmenter"
-	"strings"
+	"github.com/Aspirin4k/cv_school_test/project/imaginer/filters"
+	"github.com/Aspirin4k/cv_school_test/project/imaginer"
 )
 
 func main() {
@@ -14,6 +16,7 @@ func main() {
 	annotationsLocation := flag.String("annotations", "./../annotations/", "location of annotations")
 	imagesLocation := flag.String("images", "./../images/", "location of images")
 	fragmentsLocation := flag.String("fragments", "./../fragments/", "location for fragments")
+	greyscaleLocation := flag.String("greyscale", "./../fragments_grey/","location for greyscaled fragments")
 	flag.Parse()
 
 	annotations, err := ioutil.ReadDir(*annotationsLocation)
@@ -37,5 +40,18 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 		}
+	}
+
+	// Далее идет дополнительная часть задания
+	// 1. greyscale
+	greyscale, err := ioutil.ReadDir(*fragmentsLocation)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	for _, f :=  range greyscale {
+		provider := &filters.GreyScale{}
+		fileName := f.Name()[:strings.LastIndex(f.Name(),".")]
+		imaginer.SetFilter(*fragmentsLocation + f.Name(), *greyscaleLocation + fileName + "_grey.png", provider)
 	}
 }
