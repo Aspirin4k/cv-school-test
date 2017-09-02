@@ -12,6 +12,7 @@ import (
 Параметры - путь до исходного файла, путь до результата, применяемый фильтр
  */
 func SetFilter(srcFilename string, dstFilename string, filter Filter) error {
+
 	srcFile, err := os.Open(srcFilename)
 	if err != nil {
 		return err
@@ -21,8 +22,7 @@ func SetFilter(srcFilename string, dstFilename string, filter Filter) error {
 	if err != nil {
 		return err
 	}
-	// Этот метод будет исполняться в цикле, поэтому откладывание закрытия файла - плохая идея
-	srcFile.Close()
+	defer srcFile.Close()
 
 	// Создается папка, если еще не
 	os.MkdirAll(dstFilename[:strings.LastIndex(dstFilename,"/")], os.ModePerm)
