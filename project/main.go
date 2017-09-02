@@ -17,6 +17,7 @@ func main() {
 	imagesLocation := flag.String("images", "./../images/", "location of images")
 	fragmentsLocation := flag.String("fragments", "./../fragments/", "location for fragments")
 	greyscaleLocation := flag.String("greyscale", "./../fragments_grey/","location for greyscaled fragments")
+	flipLocation := flag.String("flip", "./../fragments_flip/", "location for flipped fragments")
 	flag.Parse()
 
 	annotations, err := ioutil.ReadDir(*annotationsLocation)
@@ -44,14 +45,21 @@ func main() {
 
 	// Далее идет дополнительная часть задания
 	// 1. greyscale
-	greyscale, err := ioutil.ReadDir(*fragmentsLocation)
+	fragments, err := ioutil.ReadDir(*fragmentsLocation)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	for _, f :=  range greyscale {
+	for _, f :=  range fragments {
 		provider := &filters.GreyScale{}
 		fileName := f.Name()[:strings.LastIndex(f.Name(),".")]
 		imaginer.SetFilter(*fragmentsLocation + f.Name(), *greyscaleLocation + fileName + "_grey.png", provider)
+	}
+
+	// 2. flip
+	for _, f :=  range fragments {
+		provider := &filters.Flip{}
+		fileName := f.Name()[:strings.LastIndex(f.Name(),".")]
+		imaginer.SetFilter(*fragmentsLocation + f.Name(), *flipLocation + fileName + "_flip.png", provider)
 	}
 }
