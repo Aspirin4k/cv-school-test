@@ -6,15 +6,11 @@ import (
 	"image/color"
 
 	"github.com/Aspirin4k/cv_school_test/project/imaginer"
-	"fmt"
 )
 
 var (
 	GREYSCALED = 0
 	COLORED = 1
-
-	MAX = float64(65535)
-	MIN = float64(0)
 )
 
 type Normalize struct {
@@ -76,7 +72,6 @@ func (f *Normalize)  ApplyFilter(src image.Image) (image.Image, error) {
 			for j := src.Bounds().Min.Y; j < src.Bounds().Max.Y; j++ {
 				r, g, b, a := src.At(i, j).RGBA()
 				sum := r + g + b
-				fmt.Printf("%f %f %f\n", float64(r) / float64(sum), g/sum, b/sum)
 				pixel := color.RGBA{
 					uint8(float64(r) / float64(sum) * 255),
 					uint8(float64(g) / float64(sum) * 255),

@@ -1,11 +1,15 @@
 package main
 
 import (
+	// Стандартные зависимости
 	"io/ioutil"
 	"flag"
 	"fmt"
 	"strings"
 
+	// Внешних зависимостей нет
+
+	// Внутренние зависимости
 	"github.com/Aspirin4k/cv_school_test/project/fragmenter"
 	"github.com/Aspirin4k/cv_school_test/project/imaginer/filters"
 	"github.com/Aspirin4k/cv_school_test/project/imaginer"
@@ -18,6 +22,8 @@ func main() {
 	fragmentsLocation := flag.String("fragments", "./../fragments/", "location for fragments")
 	greyscaleLocation := flag.String("greyscale", "./../fragments_grey/","location for greyscaled fragments")
 	flipLocation := flag.String("flip", "./../fragments_flip/", "location for flipped fragments")
+	normalizeLocation := flag.String("normalize", "./../fragments_normalized/", "location for normalized fragments")
+	noiseLocation := flag.String("noise", "./../fragments_noise/", "location for noised fragments")
 	flag.Parse()
 
 	annotations, err := ioutil.ReadDir(*annotationsLocation)
@@ -82,7 +88,7 @@ func main() {
 		provider := &filters.Normalize{}
 		provider.NormalizeType = filters.GREYSCALED
 		fileName := f.Name()[:strings.LastIndex(f.Name(),".")]
-		err = imaginer.SetFilter(*greyscaleLocation + f.Name(), *greyscaleLocation +  fileName + "_normalized.png", provider)
+		err = imaginer.SetFilter(*greyscaleLocation + f.Name(), *normalizeLocation +  fileName + "_normalized.png", provider)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -98,9 +104,23 @@ func main() {
 		provider := &filters.Normalize{}
 		provider.NormalizeType = filters.COLORED
 		fileName := f.Name()[:strings.LastIndex(f.Name(),".")]
-		err = imaginer.SetFilter(*flipLocation + f.Name(), *flipLocation + fileName + "_normalized.png", provider)
+		err = imaginer.SetFilter(*flipLocation + f.Name(), *normalizeLocation + fileName + "_normalized.png", provider)
 		if err != nil {
 			fmt.Println(err)
 		}
 	}
+
+	// Опять же, из-за нумерации неясно к какому пункту именно идет указание
+	// поэтому зашумлены были серые изображения
+	// 4 noise
+	for _, f :=  range fragmentsGrey {
+		provider := &filters.Noise{}
+		fileName := f.Name()[:strings.LastIndex(f.Name(),".")]
+		err = imaginer.SetFilter(*greyscaleLocation + f.Name(), *noiseLocation + fileName + "_noise.png", provider)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+
+	fmt.Println("Done!")
 }
